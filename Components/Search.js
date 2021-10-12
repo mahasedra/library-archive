@@ -1,7 +1,8 @@
 // Components/Search.js
 
 import React from 'react'
-import { StyleSheet, View, TextInput, Button, Text } from 'react-native'
+import { StyleSheet, View, TextInput, Button, Text, FlatList } from 'react-native'
+import films from '../Helpers/filmsData'
 import FilmItem from './FilmItem'
 
 
