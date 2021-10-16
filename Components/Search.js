@@ -9,27 +9,41 @@ class Search extends React.Component {
 
   constructor(props) {
     super(props)
-    this.searchedText = "" // Initialisation de notre donnée searchedText en dehors du state
+    this.searchedText = ""
+    this.page = 0
+    this.totalPages = 0
     this.state = {
       films: [],
-      isLoading: false // Par défaut à false car il n'y a pas de chargement tant qu'on ne lance pas de recherche
+      isLoading: false
     }
   }
 
   _loadFilms() {
     if (this.searchedText.length > 0) {
-      this.setState({ isLoading: true }) // Lancement du chargement
-      getFilmsFromApiWithSearchedText(this.searchedText).then(data => {
+      this.setState({ isLoading: true })
+      getFilmsFromApiWithSearchedText(this.searchedText, this.page + 1).then(data => {
+        this.page = data.page
+        this.totalPages = data.total_pages
         this.setState({
-          films: data.results,
-          isLoading: false // Arrêt du chargement
+          films: [...this.state.films, ...data.results],
+          isLoading: false
         })
       })
     }
   }
 
   _searchTextInputChanged(text) {
-    this.searchedText = text // Modification du texte recherché à chaque saisie de texte, sans passer par le setState comme avant
+    this.searchedText = text
+  }
+
+  _searchFilms() {
+    this.page = 0
+    this.totalPages = 0
+    this.setState({
+      films: [],
+    }, () => {
+      this._loadFilms()
+    })
   }
 
   _displayLoading() {
@@ -37,26 +51,36 @@ class Search extends React.Component {
       return (
         <View style={styles.loading_container}>
           <ActivityIndicator size='large' />
-          {/* Le component ActivityIndicator possède une propriété size pour définir la taille du visuel de chargement : small ou large. Par défaut size vaut small, on met donc large pour que le chargement soit bien visible */}
         </View>
       )
     }
   }
+  _displayDetailForFilm = (idFilm) => {
+    console.log("Display film with id " + idFilm)
+    this.props.navigation.navigate("FilmDetail", { idFilm: idFilm })
+  }
+
   render() {
-    console.log("RENDER")
     return (
       <View style={styles.main_container}>
         <TextInput
           style={styles.textinput}
           placeholder='Titre du film'
           onChangeText={(text) => this._searchTextInputChanged(text)}
-          onSubmitEditing={() => this._loadFilms()}
+          onSubmitEditing={() => this._searchFilms()}
         />
-        <Button title='Rechercher' onPress={() => this._loadFilms()} />
+        <Button title='Rechercher' onPress={() => this._searchFilms()} />
         <FlatList
           data={this.state.films}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <FilmItem film={item} />}
+          renderItem={({ item }) => <FilmItem film={item} displayDetailForFilm={this._displayDetailForFilm} />}
+          onEndReachedThreshold={0.5}
+          onEndReached={() => {
+            if (this.page < this.totalPages) {
+              this._loadFilms()
+            }
+          }}
+
         />
         {this._displayLoading()}
       </View>
@@ -67,7 +91,6 @@ class Search extends React.Component {
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
-    marginTop: 20
   },
   textinput: {
     marginLeft: 5,
