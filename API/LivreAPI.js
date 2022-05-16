@@ -50,7 +50,7 @@ export function deleteLivre(id) {
         .then((response) => response.json())
         .catch((error) => console.error(error))
 }
-export function updateLivre(id, name) {
+export function updateLivre(id, design, autor, date_edition, available) {
     return fetch(API_URL + ENDPOINT + id, {
         method: 'PATCH',
         headers: {
