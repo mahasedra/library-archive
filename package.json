@@ -9,24 +9,25 @@
   "dependencies": {
     "@react-navigation/stack": "^6.0.11",
     "expo": "~42.0.1",
+    "expo-splash-screen": "~0.11.2",
     "expo-status-bar": "~1.0.4",
+    "expo-updates": "~0.8.1",
     "moment": "^2.29.1",
     "numeral": "^2.0.6",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "~0.63.4",
-    "react-native-gesture-handler": "~1.10.2",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-image-picker": "^4.1.2",
     "react-native-reanimated": "^2.2.3",
     "react-native-screens": "^3.8.0",
+    "react-native-unimodules": "0.14.10",
     "react-native-web": "^0.17.5",
     "react-navigation": "^4.4.4",
     "react-navigation-stack": "^2.10.4",
     "react-navigation-tabs": "^2.11.1",
     "react-redux": "^7.2.5",
-    "redux": "^4.1.1",
-    "expo-splash-screen": "~0.11.2",
-    "expo-updates": "~0.8.1",
-    "react-native-unimodules": "0.14.10"
+    "redux": "^4.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
