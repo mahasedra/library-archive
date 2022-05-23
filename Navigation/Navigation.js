@@ -9,6 +9,7 @@ import Search from '../Components/Search'
 import FilmDetail from '../Components/FilmDetail'
 import Favorites from '../Components/Favorites'
 import Others from '../Components/Others'
+import Lecteur from '../Components/Lecteur';
 
 const SearchStackNavigator = createStackNavigator({
   Search: {
@@ -42,6 +43,14 @@ const OthersStackNavigator = createStackNavigator({
     }
   }
 })
+const LecteurStackNavigator = createStackNavigator({
+  Lecteur: {
+    screen: Lecteur,
+    navigationOptions: {
+      title: 'Others'
+    }
+  }
+})
 
 const MoviesTabNavigator = createBottomTabNavigator(
   {
@@ -65,8 +74,8 @@ const MoviesTabNavigator = createBottomTabNavigator(
         }
       }
     },
-    Others: {
-      screen: OthersStackNavigator,
+    Lecteur: {
+      screen: LecteurStackNavigator,
       navigationOptions: {
         tabBarIcon: () => {
           return <Image

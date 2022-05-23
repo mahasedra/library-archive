@@ -1,13 +1,8 @@
 const API_URL = "http://127.0.0.1:8000/api/"
 const ENDPOINT = "lecteurs/"
 export function getAllLecteurs(text = '', page = '') {
-    return fetch(API_URL + ENDPOINT, {
-        method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })
+    console.log(API_URL+ENDPOINT)
+    return fetch(API_URL + ENDPOINT)
         .then((response) => response.json())
         .catch((error) => console.error(error))
 }

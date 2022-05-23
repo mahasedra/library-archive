@@ -22,7 +22,7 @@ export default function Others() {
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
-          placeholder="Email."
+          placeholder="Email"
           placeholderTextColor="#003f5c"
           onChangeText={(email) => setEmail(email)}
         />
