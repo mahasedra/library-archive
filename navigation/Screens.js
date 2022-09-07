@@ -160,6 +160,29 @@ function HomeStack(props) {
   );
 }
 
+function AddTutorialStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="AddTutorial"
+      screenOptions={{
+        mode: 'card',
+        headerShown: 'screen',
+      }}
+    >
+      <Stack.Screen
+        name="Account"
+        component={AddTutorialStack}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header transparent title="Add Tutorial" navigation={navigation} scene={scene} />
+          ),
+          headerTransparent: true,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function AppStack(props) {
   return (
     <Drawer.Navigator
@@ -226,6 +249,13 @@ function AppStack(props) {
           headerShown: false,
         }}
       />
+      <Drawer.Screen
+        name="AddTutorial"
+        component={AddTutorialStack}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Drawer.Navigator>
   );
 }
@@ -238,13 +268,13 @@ export default function OnboardingStack(props) {
         headerShown: false,
       }}
     >
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Onboarding"
         component={Onboarding}
         option={{
           headerTransparent: true,
         }}
-      />
+      /> */}
       <Stack.Screen name="App" component={AppStack} />
     </Stack.Navigator>
   );

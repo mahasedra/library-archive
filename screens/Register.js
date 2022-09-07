@@ -19,6 +19,62 @@ const DismissKeyboard = ({ children }) => (
 );
 
 class Register extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onChangeTitle = this.onChangeTitle.bind(this);
+    this.onChangeDescription = this.onChangeDescription.bind(this);
+    this.saveTutorial = this.saveTutorial.bind(this);
+    this.newTutorial = this.newTutorial.bind(this);
+
+    this.state = {
+      title: "",
+      description: "",
+      published: false,
+
+      submitted: false,
+    };
+  }
+
+  onChangeTitle(text) {
+    this.setState({
+      title: text,
+    });
+  }
+
+  onChangeDescription(text) {
+    this.setState({
+      description: text,
+    });
+  }
+
+  saveTutorial() {
+    let data = {
+      title: this.state.title,
+      description: this.state.description,
+      published: false
+    };
+
+    TutorialDataService.create(data)
+      .then(() => {
+        console.log("Created new item successfully!");
+        this.setState({
+          submitted: true,
+        });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
+
+  newTutorial() {
+    this.setState({
+      title: "",
+      description: "",
+      published: false,
+
+      submitted: false,
+    });
+  }
   render() {
     return (
       <DismissKeyboard>
@@ -100,7 +156,9 @@ class Register extends React.Component {
                         <Block>
                           <Block width={width * 0.8} style={{ marginBottom: 5 }}>
                             <Input
-                              placeholder="First Name"
+                              placeholder="Title"
+                              value={this.state.title}
+                              onChangeText={text => this.onChangeTitle(text)}
                               style={styles.inputs}
                               iconContent={
                                 <Icon
@@ -111,12 +169,15 @@ class Register extends React.Component {
                                   style={styles.inputIcons}
                                 />
                               }
+
                             />
                           </Block>
                           <Block width={width * 0.8} style={{ marginBottom: 5 }}>
                             <Input
-                              placeholder="Last Name"
+                              placeholder="Description"
                               style={styles.inputs}
+                              value={this.state.description}
+                              onChangeText={text => this.onChangeDescription(text)}
                               iconContent={
                                 <Icon
                                   size={16}
@@ -144,7 +205,7 @@ class Register extends React.Component {
                             />
                           </Block>
                           <Block
-                            style={{ marginVertical: theme.SIZES.BASE, marginLeft: 15}}
+                            style={{ marginVertical: theme.SIZES.BASE, marginLeft: 15 }}
                             row
                             width={width * 0.75}
                           >
