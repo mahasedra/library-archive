@@ -1,10 +1,9 @@
 import React from "react";
-import { StyleSheet, Dimensions, ScrollView, View } from "react-native";
-import { Block, theme, Text } from "galio-framework";
+import { StyleSheet, Dimensions, ScrollView, TouchableOpacity } from "react-native";
+import { Block, theme } from "galio-framework";
 
-import { Card, Button } from "../components";
-
-import { Images, nowTheme, articles, tabs } from '../constants';
+import { nowTheme } from '../constants';
+import { Button } from "../components";
 
 const { width } = Dimensions.get('screen');
 
@@ -13,6 +12,8 @@ const thumbMeasure = (width - 48 - 32) / 3;
 import TutorialDataService from "../services/tutorial.service";
 
 import DisplayCsvDataTable from "../components/DisplayCsvDataTable";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { withNavigation } from "@react-navigation/compat";
 
 class Home extends React.Component {
   constructor(props) {
@@ -77,13 +78,26 @@ class Home extends React.Component {
   }
 
 
-  renderArticles = () => {
+  renderTutorials = () => {
     const { tutorials, currentTutorial, currentIndex, page } = this.state;
+    const { navigation } = this.props;
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.articles}
+        contentContainerStyle={styles.tutorials}
       >
+        <TouchableWithoutFeedback onPress={() => navigation.navigate('AddTutorial')}>
+          <Block flex right>
+            <Button
+              textStyle={{ fontFamily: 'montserrat-regular', fontSize: 10 }}
+              center
+              color="default"
+              style={styles.optionsButton}
+            >
+              Add tutorial
+            </Button>
+          </Block>
+        </TouchableWithoutFeedback>
         {tutorials && tutorials.length > 0 && (
           <DisplayCsvDataTable data={tutorials} />
         )}
@@ -94,7 +108,7 @@ class Home extends React.Component {
   render() {
     return (
       <Block flex center style={styles.home}>
-        {this.renderArticles()}
+        {this.renderTutorials()}
       </Block>
     );
   }
@@ -104,7 +118,7 @@ const styles = StyleSheet.create({
   home: {
     width: width
   },
-  articles: {
+  tutorials: {
     width: width - theme.SIZES.BASE * 2,
     paddingVertical: theme.SIZES.BASE,
     paddingHorizontal: 2,
@@ -167,6 +181,12 @@ const styles = StyleSheet.create({
     width: thumbMeasure,
     height: thumbMeasure
   },
+  optionsButton: {
+    width: 'auto',
+    height: 34,
+    paddingHorizontal: 10,
+    paddingVertical: 10
+  },
   productTitle: {
     color: nowTheme.COLORS.PRIMARY,
     textAlign: 'center',
@@ -176,4 +196,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default Home;
+export default withNavigation(Home);

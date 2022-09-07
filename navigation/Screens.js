@@ -13,6 +13,7 @@ import Home from '../screens/Home';
 import Onboarding from '../screens/Onboarding';
 import Pro from '../screens/Pro';
 import Profile from '../screens/Profile';
+import AddTutorial from '../screens/Tutorial/AddTutorial';
 import React from 'react';
 import Register from '../screens/Register';
 import SettingsScreen from '../screens/Settings';
@@ -147,11 +148,11 @@ function HomeStack(props) {
         }}
       />
       <Stack.Screen
-        name="Pro"
-        component={Pro}
+        name="AddTutorial"
+        component={AddTutorial}
         options={{
           header: ({ navigation, scene }) => (
-            <Header title="" back white transparent navigation={navigation} scene={scene} />
+            <Header transparent title="Add Tutorial" navigation={navigation} scene={scene} />
           ),
           headerTransparent: true,
         }}
@@ -170,8 +171,8 @@ function AddTutorialStack(props) {
       }}
     >
       <Stack.Screen
-        name="Account"
-        component={AddTutorialStack}
+        name="AddTutorial"
+        component={AddTutorial}
         options={{
           header: ({ navigation, scene }) => (
             <Header transparent title="Add Tutorial" navigation={navigation} scene={scene} />

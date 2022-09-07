@@ -5,12 +5,15 @@ import {
     Dimensions,
     StatusBar,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard,
+    TouchableOpacity
 } from 'react-native';
 import { Block, Checkbox, Text, Button as GaButton, theme } from 'galio-framework';
 
 import { Button, Icon, Input } from '../../components';
 import { Images, nowTheme } from '../../constants';
+import { withNavigation } from '@react-navigation/compat';
+import TutorialDataService from '../../services/tutorial.service';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -18,7 +21,7 @@ const DismissKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>{children}</TouchableWithoutFeedback>
 );
 
-class Register extends React.Component {
+class AddTutorial extends React.Component {
     constructor(props) {
         super(props);
         this.onChangeTitle = this.onChangeTitle.bind(this);
@@ -39,12 +42,14 @@ class Register extends React.Component {
         this.setState({
             title: text,
         });
+        console.log(this.state.title)
     }
 
     onChangeDescription(text) {
         this.setState({
             description: text,
         });
+        console.log(this.state.description)
     }
 
     saveTutorial() {
@@ -60,6 +65,7 @@ class Register extends React.Component {
                 this.setState({
                     submitted: true,
                 });
+                this.props.navigation.navigate('Home')
             })
             .catch((e) => {
                 console.log(e);
@@ -97,7 +103,7 @@ class Register extends React.Component {
                                                 color="#333"
                                                 size={24}
                                             >
-                                                Register
+                                                Add Tutorial
                                             </Text>
                                         </Block>
 
@@ -189,50 +195,19 @@ class Register extends React.Component {
                                                             }
                                                         />
                                                     </Block>
-                                                    <Block width={width * 0.8}>
-                                                        <Input
-                                                            placeholder="Email"
-                                                            style={styles.inputs}
-                                                            iconContent={
-                                                                <Icon
-                                                                    size={16}
-                                                                    color="#ADB5BD"
-                                                                    name="email-852x"
-                                                                    family="NowExtra"
-                                                                    style={styles.inputIcons}
-                                                                />
-                                                            }
-                                                        />
-                                                    </Block>
-                                                    <Block
-                                                        style={{ marginVertical: theme.SIZES.BASE, marginLeft: 15 }}
-                                                        row
-                                                        width={width * 0.75}
-                                                    >
-                                                        <Checkbox
-                                                            checkboxStyle={{
-                                                                borderWidth: 1,
-                                                                borderRadius: 2,
-                                                                borderColor: '#E3E3E3'
-                                                            }}
-                                                            color={nowTheme.COLORS.PRIMARY}
-                                                            labelStyle={{
-                                                                color: nowTheme.COLORS.HEADER,
-                                                                fontFamily: 'montserrat-regular'
-                                                            }}
-                                                            label="I agree to the terms and conditions."
-                                                        />
-                                                    </Block>
+
                                                 </Block>
                                                 <Block center>
                                                     <Button color="primary" round style={styles.createButton}>
-                                                        <Text
-                                                            style={{ fontFamily: 'montserrat-bold' }}
-                                                            size={14}
-                                                            color={nowTheme.COLORS.WHITE}
-                                                        >
-                                                            Get Started
-                                                        </Text>
+                                                        <TouchableOpacity onPress={() => this.saveTutorial()}>
+                                                            <Text
+                                                                style={{ fontFamily: 'montserrat-bold' }}
+                                                                size={14}
+                                                                color={nowTheme.COLORS.WHITE}
+                                                            >
+                                                                Submit
+                                                            </Text>
+                                                        </TouchableOpacity>
                                                     </Button>
                                                 </Block>
                                             </Block>
@@ -326,4 +301,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Register;
+export default withNavigation(AddTutorial);
