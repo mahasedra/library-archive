@@ -42,14 +42,12 @@ class AddTutorial extends React.Component {
         this.setState({
             title: text,
         });
-        console.log(this.state.title)
     }
 
     onChangeDescription(text) {
         this.setState({
             description: text,
         });
-        console.log(this.state.description)
     }
 
     saveTutorial() {

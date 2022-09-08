@@ -3,7 +3,7 @@ import { StyleSheet, Dimensions, ScrollView, TouchableOpacity } from "react-nati
 import { Block, theme } from "galio-framework";
 
 import { nowTheme } from '../constants';
-import { Button } from "../components";
+import { Button, Input } from "../components";
 
 const { width } = Dimensions.get('screen');
 
@@ -22,12 +22,15 @@ class Home extends React.Component {
     this.setActiveTutorial = this.setActiveTutorial.bind(this);
     this.onDataChange = this.onDataChange.bind(this);
     this.setPage = this.setPage.bind(this);
+    this.setSearch = this.setSearch.bind(this);
 
     this.state = {
       tutorials: [],
       currentTutorial: null,
       currentIndex: -1,
       page: 0,
+      search: '',
+      searchTutorials: [],
     };
   }
   componentDidMount() {
@@ -54,6 +57,7 @@ class Home extends React.Component {
 
     this.setState({
       tutorials: tutorials,
+      tempTutorials: tutorials
     });
   }
 
@@ -62,6 +66,10 @@ class Home extends React.Component {
       currentTutorial: null,
       currentIndex: -1,
     });
+  }
+
+  initData() {
+    TutorialDataService.getAll().on("value", this.onDataChange);
   }
 
   setActiveTutorial(tutorial, index) {
@@ -77,15 +85,39 @@ class Home extends React.Component {
     })
   }
 
+  setSearch(search) {
+    this.setState({
+      search: search
+    },()=>{
+      let searchTutorials = this.state.tutorials.filter((item) => {
+        console.log(item.title.includes(search))
+        return item.title.includes(this.state.search) || item.description.includes(this.state.search)
+      })
+      this.setState({
+        tempTutorials: searchTutorials
+      })
+    })
+  }
+
 
   renderTutorials = () => {
-    const { tutorials, currentTutorial, currentIndex, page } = this.state;
+    const { tempTutorials, currentTutorial, currentIndex, page } = this.state;
     const { navigation } = this.props;
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.tutorials}
       >
+        <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
+          <Input
+            primary={false}
+            right
+            placeholder="Search"
+            iconContent={<Block />}
+            onChangeText={text => this.setSearch(text)}
+            shadowless
+          />
+        </Block>
         <TouchableWithoutFeedback onPress={() => navigation.navigate('AddTutorial')}>
           <Block flex right>
             <Button
@@ -98,8 +130,8 @@ class Home extends React.Component {
             </Button>
           </Block>
         </TouchableWithoutFeedback>
-        {tutorials && tutorials.length > 0 && (
-          <DisplayCsvDataTable data={tutorials} />
+        {tempTutorials && tempTutorials.length > 0 && (
+          <DisplayCsvDataTable initData={this.initData} data={tempTutorials} />
         )}
       </ScrollView>
     );
