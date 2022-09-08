@@ -30,7 +30,17 @@ class DrawerItem extends React.Component {
             style={{ opacity: 0.5 }}
           />
         );
-      case 'Book':
+      case 'Articles':
+        return (
+          <Icon
+            name="paper"
+            family="NowExtra"
+            size={18}
+            color={focused ? nowTheme.COLORS.PRIMARY : 'black'}
+            style={{ opacity: 0.5 }}
+          />
+        );
+      case 'Books':
         return (
           <Icon
             name="paper"
@@ -118,9 +128,9 @@ class DrawerItem extends React.Component {
         onPress={() =>
           title == 'GETTING STARTED'
             ? Linking.openURL('https://demos.creative-tim.com/now-ui-pro-react-native/docs/').catch(
-                (err) => console.error('An error occurred', err)
-              )
-            : navigation.navigate(title == 'LOGOUT' ? 'Onboarding' : title)
+              (err) => console.error('An error occurred', err)
+            )
+            : navigation.navigate(title == 'LOGOUT' ? 'Onboarding' : title == 'Books' ? 'Articles' : title )
         }
       >
         <Block flex row style={containerStyles}>
@@ -138,7 +148,7 @@ class DrawerItem extends React.Component {
               bold={focused ? true : false}
               color={focused ? nowTheme.COLORS.PRIMARY : 'black'}
             >
-              {title}
+              {title == 'Articles' ? 'Books' : title}
             </Text>
           </Block>
         </Block>

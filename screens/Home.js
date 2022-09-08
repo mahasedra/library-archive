@@ -1,80 +1,82 @@
 import React from "react";
 import { StyleSheet, Dimensions, ScrollView, TouchableOpacity } from "react-native";
 import { Block, theme } from "galio-framework";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { DataTable } from "react-native-paper";
 
 import { nowTheme } from '../constants';
 import { Button, Input } from "../components";
 
+import MemberDataService from "../services/member.service";
+
+import DisplayMemberDataTable from "../components/DisplayMemberDataTable";
+import { withNavigation } from "@react-navigation/compat";
 const { width } = Dimensions.get('screen');
 
 const thumbMeasure = (width - 48 - 32) / 3;
-
-import TutorialDataService from "../services/tutorial.service";
-
-import DisplayCsvDataTable from "../components/DisplayCsvDataTable";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { withNavigation } from "@react-navigation/compat";
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
     this.refreshList = this.refreshList.bind(this);
-    this.setActiveTutorial = this.setActiveTutorial.bind(this);
+    this.setActiveMember = this.setActiveMember.bind(this);
     this.onDataChange = this.onDataChange.bind(this);
     this.setPage = this.setPage.bind(this);
     this.setSearch = this.setSearch.bind(this);
+    this.setStepMember = this.setStepMember.bind(this);
+    this.setStepBook = this.setStepBook.bind(this);
 
     this.state = {
-      tutorials: [],
-      currentTutorial: null,
+      members: [],
+      currentMember: null,
       currentIndex: -1,
       page: 0,
       search: '',
-      tempTutorials: [],
+      tempMembers: [],
+      stepMember: true,
+      stepBook: true,
     };
   }
   componentDidMount() {
-    TutorialDataService.getAll().on("value", this.onDataChange);
+    MemberDataService.getAll().on("value", this.onDataChange);
   }
 
   componentWillUnmount() {
-    TutorialDataService.getAll().off("value", this.onDataChange);
+    MemberDataService.getAll().off("value", this.onDataChange);
   }
 
   onDataChange(items) {
-    let tutorials = [];
+    let members = [];
 
     items.forEach((item) => {
       let key = item.key;
       let data = item.val();
-      tutorials.push({
+      members.push({
         key: key,
-        title: data.title,
-        description: data.description,
-        published: data.published,
+        name: data.name,
       });
     });
 
     this.setState({
-      tutorials: tutorials,
-      tempTutorials: tutorials
-    });
+      members: members,
+      tempMembers: members
+    }, console.log(members));
   }
 
   refreshList() {
     this.setState({
-      currentTutorial: null,
+      currentMember: null,
       currentIndex: -1,
     });
   }
 
   initData() {
-    TutorialDataService.getAll().on("value", this.onDataChange);
+    MemberDataService.getAll().on("value", this.onDataChange);
   }
 
-  setActiveTutorial(tutorial, index) {
+  setActiveMember(Member, index) {
     this.setState({
-      currentTutorial: tutorial,
+      currentMember: Member,
       currentIndex: index,
     });
   }
@@ -88,51 +90,51 @@ class Home extends React.Component {
   setSearch(search) {
     this.setState({
       search: search
-    },()=>{
-      let searchTutorials = this.state.tutorials.filter((item) => {
-        console.log(item.title.includes(search))
-        return item.title.includes(this.state.search) || item.description.includes(this.state.search)
+    }, () => {
+      let searchMembers = this.state.members.filter((item) => {
+        return item.name.includes(this.state.search)
       })
       this.setState({
-        tempTutorials: searchTutorials
+        tempMembers: searchMembers
       })
     })
   }
 
+  setStepBook() {
+    this.setState({
+      stepBook: !this.state.stepBook
+    })
+  }
 
-  renderTutorials = () => {
-    const { tempTutorials, currentTutorial, currentIndex, page } = this.state;
+  setStepMember() {
+    this.setState({
+      stepMember: !this.state.stepMember
+    })
+  }
+
+  renderMembers = () => {
+    const { tempMembers, stepMember, stepBook } = this.state;
     const { navigation } = this.props;
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.tutorials}
+        contentContainerStyle={styles.members}
       >
-        <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
-          <Input
-            primary={false}
-            right
-            placeholder="Search"
-            iconContent={<Block />}
-            onChangeText={text => this.setSearch(text)}
-            shadowless
-          />
-        </Block>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('AddTutorial')}>
-          <Block flex right>
-            <Button
-              textStyle={{ fontFamily: 'montserrat-regular', fontSize: 10 }}
-              center
-              color="default"
-              style={styles.optionsButton}
-            >
-              Add tutorial
-            </Button>
+        {stepMember && (<>
+          <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
+            <Input
+              primary={false}
+              right
+              placeholder="Search"
+              iconContent={<Block />}
+              onChangeText={text => this.setSearch(text)}
+              shadowless
+            />
           </Block>
-        </TouchableWithoutFeedback>
-        {tempTutorials && tempTutorials.length > 0 && (
-          <DisplayCsvDataTable initData={this.initData} data={tempTutorials} />
-        )}
+          {tempMembers && tempMembers.length > 0 && (
+            <DisplayMemberDataTable selectMember={this.initData} data={tempMembers} />
+          )}
+        </>)}
       </ScrollView>
     );
   };
@@ -140,7 +142,7 @@ class Home extends React.Component {
   render() {
     return (
       <Block flex center style={styles.home}>
-        {this.renderTutorials()}
+        {this.renderMembers()}
       </Block>
     );
   }
@@ -150,7 +152,7 @@ const styles = StyleSheet.create({
   home: {
     width: width
   },
-  tutorials: {
+  members: {
     width: width - theme.SIZES.BASE * 2,
     paddingVertical: theme.SIZES.BASE,
     paddingHorizontal: 2,
@@ -224,6 +226,71 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'montserrat-bold',
     fontSize: 18
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "black",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  inputIcons: {
+    marginRight: 12,
+    color: nowTheme.COLORS.ICON_INPUT
+  },
+  inputs: {
+    borderWidth: 1,
+    borderColor: '#E3E3E3',
+    borderRadius: 21.5
+  },
+  passwordCheck: {
+    paddingLeft: 2,
+    paddingTop: 6,
+    paddingBottom: 15
+  },
+  createButton: {
+    width: width * 0.5,
+    marginTop: 25,
+    marginBottom: 40
+  },
+  social: {
+    width: theme.SIZES.BASE * 3.5,
+    height: theme.SIZES.BASE * 3.5,
+    borderRadius: theme.SIZES.BASE * 1.75,
+    justifyContent: 'center',
+    marginHorizontal: 10
+  },
+  colorWhite: {
+    color: 'white'
   }
 });
 

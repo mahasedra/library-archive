@@ -90,7 +90,6 @@ class Book extends React.Component {
             search: search
         }, () => {
             let searchBooks = this.state.books.filter((item) => {
-                console.log(item.auteur.includes(search))
                 return item.auteur.includes(this.state.search) || item.design.includes(this.state.search)
             })
             this.setState({

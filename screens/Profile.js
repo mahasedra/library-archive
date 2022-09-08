@@ -38,8 +38,8 @@ const Profile = () => {
                       fontSize: 26
                     }}
                     color='#ffffff'
-                    >
-                    Ryan Scheinder
+                  >
+                    RATOVOHERISON Mahasedra
                   </Text>
 
                   <Text
@@ -54,7 +54,7 @@ const Profile = () => {
                       opacity: .8
                     }}
                   >
-                    Photographer
+                    Frontend developer
                   </Text>
                 </Block>
                 <Block style={styles.info}>
@@ -83,7 +83,7 @@ const Profile = () => {
                       </Text>
                       <Text style={{ fontFamily: 'montserrat-regular' }} size={14} color="white">
                         Comments
-                        </Text>
+                      </Text>
                     </Block>
 
                     <Block middle>
@@ -143,7 +143,7 @@ const Profile = () => {
 
       </Block>
       <Block />
-      <Block flex={0.4} style={{ padding: theme.SIZES.BASE, marginTop: 90}}>
+      <Block flex={0.4} style={{ padding: theme.SIZES.BASE, marginTop: 90 }}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Block flex style={{ marginTop: 20 }}>
             <Block middle>
@@ -159,7 +159,7 @@ const Profile = () => {
                 }}
               >
                 About me
-                  </Text>
+              </Text>
               <Text
                 size={16}
                 muted
@@ -172,25 +172,24 @@ const Profile = () => {
                   paddingHorizontal: 15
                 }}
               >
-                An artist of considerable range, named Ryan — the name has taken by Melbourne has raised,
-                Brooklyn-based Nick Murphy — writes, performs and records all of his own music.
-                  </Text>
+                Responsive Web Designer & Developer, I fix bugs, improve graphics, add or correct features, I can also start a project from start as the client wishes.
+              </Text>
             </Block>
             <Block row style={{ paddingVertical: 14, paddingHorizontal: 15 }} space="between">
               <Text bold size={16} color="#2c2c2c" style={{ marginTop: 3 }}>
                 Album
-                  </Text>
+              </Text>
               <Button
                 small
                 color="transparent"
                 textStyle={{ color: nowTheme.COLORS.PRIMARY, fontSize: 14 }}
               >
                 View all
-                  </Button>
+              </Button>
             </Block>
 
 
-            <Block style={{ paddingBottom: -HeaderHeight * 2, paddingHorizontal: 15}}>
+            <Block style={{ paddingBottom: -HeaderHeight * 2, paddingHorizontal: 15 }}>
               <Block row space="between" style={{ flexWrap: 'wrap' }}>
                 {Images.Viewed.map((img, imgIndex) => (
                   <Image

@@ -30,6 +30,7 @@
     "expo-updates": "~0.13.4",
     "firebase": "^7.24.0",
     "galio-framework": "0.8.0",
+    "moment": "^2.29.4",
     "prop-types": "15.7.2",
     "react": "17.0.2",
     "react-data-table-component": "^7.5.3",
