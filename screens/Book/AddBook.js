@@ -13,7 +13,7 @@ import { Block, Checkbox, Text, Button as GaButton, theme } from 'galio-framewor
 import { Button, Icon, Input } from '../../components';
 import { Images, nowTheme } from '../../constants';
 import { withNavigation } from '@react-navigation/compat';
-import TutorialDataService from '../../services/tutorial.service';
+import BookDataService from '../../services/book.service';
 
 const { width, height } = Dimensions.get('screen');
 
@@ -21,59 +21,67 @@ const DismissKeyboard = ({ children }) => (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>{children}</TouchableWithoutFeedback>
 );
 
-class AddTutorial extends React.Component {
+class AddBook extends React.Component {
     constructor(props) {
         super(props);
-        this.onChangeTitle = this.onChangeTitle.bind(this);
-        this.onChangeDescription = this.onChangeDescription.bind(this);
-        this.saveTutorial = this.saveTutorial.bind(this);
-        this.newTutorial = this.newTutorial.bind(this);
+        this.onChangeAuteur = this.onChangeAuteur.bind(this);
+        this.onChangeDesign = this.onChangeDesign.bind(this);
+        this.onChangeDate = this.onChangeDate.bind(this);
+        this.saveBook = this.saveBook.bind(this);
+        this.newBook = this.newBook.bind(this);
 
         this.state = {
-            title: "",
-            description: "",
+            auteur: "",
+            design: "",
+            date: "",
             published: false,
 
             submitted: false,
         };
     }
 
-    onChangeTitle(text) {
+    onChangeAuteur(text) {
         this.setState({
-            title: text,
+            auteur: text,
         });
     }
 
-    onChangeDescription(text) {
+    onChangeDesign(text) {
         this.setState({
-            description: text,
+            design: text,
         });
     }
 
-    saveTutorial() {
+    onChangeDate(text) {
+        this.setState({
+            date: text,
+        });
+    }
+
+    saveBook() {
         let data = {
-            title: this.state.title,
-            description: this.state.description,
-            published: false
+            auteur: this.state.auteur,
+            design: this.state.design,
+            date: this.state.date,
         };
 
-        TutorialDataService.create(data)
+        BookDataService.create(data)
             .then(() => {
                 console.log("Created new item successfully!");
                 this.setState({
                     submitted: true,
                 });
-                this.props.navigation.navigate('Article')
+                this.props.navigation.navigate('Articles')
             })
             .catch((e) => {
                 console.log(e);
             });
     }
 
-    newTutorial() {
+    newBook() {
         this.setState({
-            title: "",
-            description: "",
+            auteur: "",
+            design: "",
             published: false,
 
             submitted: false,
@@ -101,7 +109,7 @@ class AddTutorial extends React.Component {
                                                 color="#333"
                                                 size={24}
                                             >
-                                                Add Tutorial
+                                                Add Book
                                             </Text>
                                         </Block>
 
@@ -160,9 +168,9 @@ class AddTutorial extends React.Component {
                                                 <Block>
                                                     <Block width={width * 0.8} style={{ marginBottom: 5 }}>
                                                         <Input
-                                                            placeholder="Title"
-                                                            value={this.state.title}
-                                                            onChangeText={text => this.onChangeTitle(text)}
+                                                            placeholder="Auteur"
+                                                            value={this.state.auteur}
+                                                            onChangeText={text => this.onChangeAuteur(text)}
                                                             style={styles.inputs}
                                                             iconContent={
                                                                 <Icon
@@ -178,10 +186,10 @@ class AddTutorial extends React.Component {
                                                     </Block>
                                                     <Block width={width * 0.8} style={{ marginBottom: 5 }}>
                                                         <Input
-                                                            placeholder="Description"
+                                                            placeholder="Design"
                                                             style={styles.inputs}
-                                                            value={this.state.description}
-                                                            onChangeText={text => this.onChangeDescription(text)}
+                                                            value={this.state.design}
+                                                            onChangeText={text => this.onChangeDesign(text)}
                                                             iconContent={
                                                                 <Icon
                                                                     size={16}
@@ -193,11 +201,28 @@ class AddTutorial extends React.Component {
                                                             }
                                                         />
                                                     </Block>
+                                                    <Block width={width * 0.8} style={{ marginBottom: 5 }}>
+                                                        <Input
+                                                            placeholder="Edition date"
+                                                            style={styles.inputs}
+                                                            value={this.state.date}
+                                                            onChangeText={text => this.onChangeDate(text)}
+                                                            iconContent={
+                                                                <Icon
+                                                                    size={16}
+                                                                    color="#ADB5BD"
+                                                                    name="email-852x"
+                                                                    family="NowExtra"
+                                                                    style={styles.inputIcons}
+                                                                />
+                                                            }
+                                                        />
+                                                    </Block>
 
                                                 </Block>
                                                 <Block center>
                                                     <Button color="primary" round style={styles.createButton}>
-                                                        <TouchableOpacity onPress={() => this.saveTutorial()}>
+                                                        <TouchableOpacity onPress={() => this.saveBook()}>
                                                             <Text
                                                                 style={{ fontFamily: 'montserrat-bold' }}
                                                                 size={14}
@@ -230,7 +255,6 @@ const styles = StyleSheet.create({
     },
     imageBackground: {
         width: width,
-        height: height
     },
     registerContainer: {
         marginTop: 55,
@@ -287,7 +311,7 @@ const styles = StyleSheet.create({
     },
     createButton: {
         width: width * 0.5,
-        marginTop: 25,
+        marginTop: 10,
         marginBottom: 40
     },
     social: {
@@ -299,4 +323,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default withNavigation(AddTutorial);
+export default withNavigation(AddBook);

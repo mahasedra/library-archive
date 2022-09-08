@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, StyleSheet, Alert, Text, TouchableWithoutFeedback, View, Dimensions } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import { Icon, Input, Button } from '.';
-import TutorialDataService from '../services/tutorial.service';
+import BookDataService from '../services/book.service';
 import { Block, theme } from 'galio-framework';
 
 import { nowTheme } from '../constants';
@@ -12,12 +12,13 @@ const { width, height } = Dimensions.get('screen');
 
 const optionsPerPage = [2, 3, 4];
 
-const DisplayCsvDataTable = (props) => {
+const DisplayBookDataTable = (props) => {
     const [data, setData] = useState(props.data);
     const [page, setPage] = useState(0);
     const [key, setKey] = useState(null)
-    const [title, setTitle] = useState(null)
-    const [description, setDescription] = useState(null)
+    const [auteur, setAuteur] = useState(null)
+    const [design, setDesign] = useState(null)
+    const [date, setDate] = useState(null)
     const [itemsPerPage, setItemsPerPage] = useState(optionsPerPage[0]);
     const [modalDeleteVisible, setModalDeleteVisible] = useState(false);
     const [modalEditVisible, setModalEditVisible] = useState(false);
@@ -33,9 +34,9 @@ const DisplayCsvDataTable = (props) => {
         setModalDeleteVisible(true);
         setKey(key)
     }
-    const deleteTutorial = () => {
+    const deleteBook = () => {
         if (key) {
-            TutorialDataService.delete(key)
+            BookDataService.delete(key)
                 .then(() => {
                     Alert.alert("Deleted");
                     setModalDeleteVisible(!modalDeleteVisible);
@@ -43,21 +44,23 @@ const DisplayCsvDataTable = (props) => {
                 .catch((e) => {
                     console.log(e);
                 });
-            props.navigation.navigate('Home')
+            props.navigation.navigate('Articles')
         }
     }
     const openEditModal = (key) => {
         setModalEditVisible(true);
         setKey(key)
     }
-    const updateTutorial = () => {
-        if (key && title && description) {
+    const updateBook = () => {
+        Alert.alert("eto");
+        if (key && auteur && design && date) {
             const data = {
-                title: title,
-                description: description,
+                auteur: auteur,
+                design: design,
+                date: date,
             };
-
-            TutorialDataService.update(key, data)
+            setModalEditVisible(!modalEditVisible);
+            BookDataService.update(key, data)
                 .then(() => {
                     Alert.alert("Updated");
                     setModalEditVisible(!modalEditVisible);
@@ -65,7 +68,7 @@ const DisplayCsvDataTable = (props) => {
                 .catch((e) => {
                     console.log(e);
                 });
-            props.navigation.navigate('Home')
+            props.navigation.navigate('Articles')
         }
     }
 
@@ -88,7 +91,7 @@ const DisplayCsvDataTable = (props) => {
                         >
                             <TouchableWithoutFeedback
                                 style={[styles.button, styles.buttonClose]}
-                                onPress={() => deleteTutorial()}
+                                onPress={() => deleteBook()}
                             >
                                 <Text style={styles.colorWhite}>Confirm</Text>
                             </TouchableWithoutFeedback>
@@ -118,9 +121,9 @@ const DisplayCsvDataTable = (props) => {
                         <Block>
                             <Block width={width * 0.8} style={{ marginBottom: 5 }}>
                                 <Input
-                                    placeholder="Title"
-                                    value={title}
-                                    onChangeText={text => setTitle(text)}
+                                    placeholder="Auteur"
+                                    value={auteur}
+                                    onChangeText={text => setAuteur(text)}
                                     style={styles.inputs}
                                     iconContent={
                                         <Icon
@@ -135,15 +138,32 @@ const DisplayCsvDataTable = (props) => {
                             </Block>
                             <Block width={width * 0.8} style={{ marginBottom: 5 }}>
                                 <Input
-                                    placeholder="Description"
+                                    placeholder="Design"
                                     style={styles.inputs}
-                                    value={description}
-                                    onChangeText={text => setDescription(text)}
+                                    value={design}
+                                    onChangeText={text => setDesign(text)}
                                     iconContent={
                                         <Icon
                                             size={16}
                                             color="#ADB5BD"
                                             name="caps-small2x"
+                                            family="NowExtra"
+                                            style={styles.inputIcons}
+                                        />
+                                    }
+                                />
+                            </Block>
+                            <Block width={width * 0.8} style={{ marginBottom: 5 }}>
+                                <Input
+                                    placeholder="Date"
+                                    style={styles.inputs}
+                                    value={date}
+                                    onChangeText={text => setDate(text)}
+                                    iconContent={
+                                        <Icon
+                                            size={16}
+                                            color="#ADB5BD"
+                                            name="email-852x"
                                             family="NowExtra"
                                             style={styles.inputIcons}
                                         />
@@ -158,7 +178,7 @@ const DisplayCsvDataTable = (props) => {
                         >
                             <TouchableWithoutFeedback
                                 style={[styles.button, styles.buttonClose]}
-                                onPress={() => updateTutorial()}
+                                onPress={() => updateBook()}
                             >
                                 <Text style={styles.colorWhite}>Update</Text>
                             </TouchableWithoutFeedback>
@@ -173,19 +193,22 @@ const DisplayCsvDataTable = (props) => {
                 </View>
             </Modal>
             <DataTable.Header>
-                <DataTable.Title>Title</DataTable.Title>
-                <DataTable.Title numeric>Description</DataTable.Title>
+                <DataTable.Title>Auteur</DataTable.Title>
+                <DataTable.Title numeric>Design</DataTable.Title>
+                <DataTable.Title numeric>Date</DataTable.Title>
                 <DataTable.Title numeric>Action</DataTable.Title>
             </DataTable.Header>
             {data && data.map((item, index) => (
                 <DataTable.Row key={index}>
-                    <DataTable.Cell>{item.title}</DataTable.Cell>
-                    <DataTable.Cell numeric>{item.description}</DataTable.Cell>
+                    <DataTable.Cell>{item.auteur}</DataTable.Cell>
+                    <DataTable.Cell numeric>{item.design}</DataTable.Cell>
+                    <DataTable.Cell numeric>{item.date}</DataTable.Cell>
                     <DataTable.Cell numeric>
                         <TouchableWithoutFeedback
                             onPress={() => {
-                                setTitle(item.title)
-                                setDescription(item.description)
+                                setAuteur(item.auteur)
+                                setDesign(item.design)
+                                setDate(item.date)
                                 openEditModal(item.key)
                             }}>
                             <Block flex left>
@@ -303,4 +326,4 @@ const styles = StyleSheet.create({
         color: 'white'
     }
 });
-export default withNavigation(DisplayCsvDataTable);
+export default withNavigation(DisplayBookDataTable);

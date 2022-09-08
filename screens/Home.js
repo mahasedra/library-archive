@@ -30,7 +30,7 @@ class Home extends React.Component {
       currentIndex: -1,
       page: 0,
       search: '',
-      searchTutorials: [],
+      tempTutorials: [],
     };
   }
   componentDidMount() {

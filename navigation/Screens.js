@@ -10,10 +10,12 @@ import Components from '../screens/Components';
 import CustomDrawerContent from './Menu';
 // screens
 import Home from '../screens/Home';
+import Book from '../screens/Book';
 import Onboarding from '../screens/Onboarding';
 import Pro from '../screens/Pro';
 import Profile from '../screens/Profile';
 import AddTutorial from '../screens/Tutorial/AddTutorial';
+import AddBook from '../screens/Book/AddBook';
 import React from 'react';
 import Register from '../screens/Register';
 import SettingsScreen from '../screens/Settings';
@@ -60,12 +62,22 @@ function ArticlesStack(props) {
     >
       <Stack.Screen
         name="Articles"
-        component={Articles}
+        component={Book}
         options={{
           header: ({ navigation, scene }) => (
-            <Header title="Articles" navigation={navigation} scene={scene} />
+            <Header title="Books" navigation={navigation} scene={scene} />
           ),
           backgroundColor: '#FFFFFF',
+        }}
+      />
+      <Stack.Screen
+        name="AddBook"
+        component={AddBook}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header transparent title="Add Book" navigation={navigation} scene={scene} />
+          ),
+          headerTransparent: true,
         }}
       />
     </Stack.Navigator>
@@ -184,6 +196,29 @@ function AddTutorialStack(props) {
   );
 }
 
+function AddBookStack(props) {
+  return (
+    <Stack.Navigator
+      initialRouteName="AddBook"
+      screenOptions={{
+        mode: 'card',
+        headerShown: 'screen',
+      }}
+    >
+      <Stack.Screen
+        name="AddBook"
+        component={AddBook}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header transparent title="Add Book" navigation={navigation} scene={scene} />
+          ),
+          headerTransparent: true,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function AppStack(props) {
   return (
     <Drawer.Navigator
@@ -213,7 +248,7 @@ function AppStack(props) {
           fontWeight: 'normal',
         },
       }}
-      initialRouteName="Home"
+      initialRouteName="Articles"
     >
       <Drawer.Screen
         name="Home"
@@ -253,6 +288,13 @@ function AppStack(props) {
       <Drawer.Screen
         name="AddTutorial"
         component={AddTutorialStack}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Drawer.Screen
+        name="AddBook"
+        component={AddBookStack}
         options={{
           headerShown: false,
         }}
