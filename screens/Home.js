@@ -1,15 +1,17 @@
 import React from "react";
-import { StyleSheet, Dimensions, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, Dimensions, ScrollView, View, Text, Alert } from "react-native";
 import { Block, theme } from "galio-framework";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { DataTable } from "react-native-paper";
 
 import { nowTheme } from '../constants';
 import { Button, Input } from "../components";
+import moment from "moment";
 
 import MemberDataService from "../services/member.service";
+import BookDataService from "../services/book.service";
+import LoanDataService from "../services/loan.service";
 
-import DisplayMemberDataTable from "../components/DisplayMemberDataTable";
 import { withNavigation } from "@react-navigation/compat";
 const { width } = Dimensions.get('screen');
 
@@ -18,36 +20,67 @@ const thumbMeasure = (width - 48 - 32) / 3;
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.refreshList = this.refreshList.bind(this);
     this.setActiveMember = this.setActiveMember.bind(this);
-    this.onDataChange = this.onDataChange.bind(this);
+    this.onDataChangeLoan = this.onDataChangeLoan.bind(this);
+    this.onDataChangeMember = this.onDataChangeMember.bind(this);
+    this.onDataChangeBook = this.onDataChangeBook.bind(this);
     this.setPage = this.setPage.bind(this);
     this.setSearch = this.setSearch.bind(this);
     this.setStepMember = this.setStepMember.bind(this);
     this.setStepBook = this.setStepBook.bind(this);
+    this.setSelectedMember = this.setSelectedMember.bind(this);
+    this.setSelectedBook = this.setSelectedBook.bind(this);
+    this.createLoan = this.createLoan.bind(this);
 
     this.state = {
+      loans: [],
       members: [],
-      currentMember: null,
-      currentIndex: -1,
+      books: [],
+      selectedMember: null,
+      selectedBook: null,
       page: 0,
       search: '',
+      tempLoans: [],
       tempMembers: [],
-      stepMember: true,
-      stepBook: true,
+      tempBooks: [],
+      stepLoan: true,
+      stepBook: false,
+      stepMember: false,
+      stepFinal: false,
     };
   }
   componentDidMount() {
-    MemberDataService.getAll().on("value", this.onDataChange);
+    LoanDataService.getAll().on("value", this.onDataChangeLoan);
+    MemberDataService.getAll().on("value", this.onDataChangeMember);
+    BookDataService.getAll().on("value", this.onDataChangeBook);
   }
 
   componentWillUnmount() {
-    MemberDataService.getAll().off("value", this.onDataChange);
+    LoanDataService.getAll().on("value", this.onDataChangeLoan);
+    MemberDataService.getAll().off("value", this.onDataChangeMember);
+    BookDataService.getAll().on("value", this.onDataChangeBook);
   }
 
-  onDataChange(items) {
-    let members = [];
+  onDataChangeLoan(items) {
+    let loans = [];
+    items.forEach((item) => {
+      let key = item.key;
+      let data = item.val();
+      loans.push({
+        key: key,
+        design: data.design,
+        name: data.name,
+        loanDate: data.loanDate,
+      });
+    });
+    this.setState({
+      loans: loans,
+      tempLoans: loans
+    });
+  }
 
+  onDataChangeMember(items) {
+    let members = [];
     items.forEach((item) => {
       let key = item.key;
       let data = item.val();
@@ -56,22 +89,28 @@ class Home extends React.Component {
         name: data.name,
       });
     });
-
     this.setState({
       members: members,
       tempMembers: members
-    }, console.log(members));
-  }
-
-  refreshList() {
-    this.setState({
-      currentMember: null,
-      currentIndex: -1,
     });
   }
+  onDataChangeBook(items) {
+    let books = [];
+    items.forEach((item) => {
+      let key = item.key;
+      let data = item.val();
+      books.push({
+        key: key,
+        auteur: data.auteur,
+        design: data.design,
+        date: data.date
+      });
+    });
 
-  initData() {
-    MemberDataService.getAll().on("value", this.onDataChange);
+    this.setState({
+      books: books,
+      tempBooks: books
+    });
   }
 
   setActiveMember(Member, index) {
@@ -97,6 +136,18 @@ class Home extends React.Component {
       this.setState({
         tempMembers: searchMembers
       })
+      let searchBooks = this.state.books.filter((item) => {
+        return item.auteur.includes(this.state.search) || item.design.includes(this.state.search)
+      })
+      this.setState({
+        tempBooks: searchBooks
+      })
+      let searchLoans = this.state.loans.filter((item) => {
+        return item.name.includes(this.state.search) || item.design.includes(this.state.search)
+      })
+      this.setState({
+        tempLoans: searchLoans
+      })
     })
   }
 
@@ -112,29 +163,214 @@ class Home extends React.Component {
     })
   }
 
+  setSelectedBook(book) {
+    this.setState({
+      selectedBook: book
+    })
+    this.setStepMember()
+    this.setStepBook()
+  }
+  setSelectedMember(member) {
+    this.setState({
+      selectedMember: member,
+      stepFinal: true,
+    })
+    this.setStepMember();
+  }
+
+  createLoan() {
+    const data = {
+      bookKey: this.state.selectedBook.key,
+      auteur: this.state.selectedBook.auteur,
+      design: this.state.selectedBook.design,
+      memberkey: this.state.selectedMember.key,
+      name: this.state.selectedMember.name,
+      loanDate: moment().format()
+    }
+    LoanDataService.create(data)
+      .then(() => {
+        Alert.alert("Saved successfully")
+        console.log("Created new item successfully!");
+        this.setState({
+          submitted: true,
+        });
+        this.props.navigation.navigate('Home')
+        this.setState({
+          selectedBook: null,
+          selectedMember: null,
+          stepLoan: true,
+          stepBook: false,
+          stepMember: false,
+          stepFinal: false,
+        })
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
+
   renderMembers = () => {
-    const { tempMembers, stepMember, stepBook } = this.state;
+    const { tempMembers, tempBooks, tempLoans, stepLoan, stepMember, stepBook, stepFinal } = this.state;
     const { navigation } = this.props;
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.members}
       >
-        {stepMember && (<>
-          <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
-            <Input
-              primary={false}
-              right
-              placeholder="Search"
-              iconContent={<Block />}
-              onChangeText={text => this.setSearch(text)}
-              shadowless
+        <Block style={{ paddingHorizontal: theme.SIZES.BASE }}>
+          <Input
+            primary={false}
+            right
+            placeholder="Search"
+            iconContent={<Block />}
+            onChangeText={text => this.setSearch(text)}
+            shadowless
+          />
+        </Block>
+        {stepLoan && (<>
+          <TouchableWithoutFeedback onPress={() => {
+            this.setState({
+              stepLoan: false,
+              stepBook: true,
+            })
+          }}>
+            <Block flex right>
+              <Button
+                textStyle={{ fontFamily: 'montserrat-regular', fontSize: 10 }}
+                center
+                color="default"
+                style={styles.optionsButton}
+              >
+                Add loan
+              </Button>
+            </Block>
+          </TouchableWithoutFeedback>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title>Design</DataTable.Title>
+              <DataTable.Title>Member</DataTable.Title>
+              <DataTable.Title numeric>Loan Date</DataTable.Title>
+            </DataTable.Header>
+            {tempLoans && tempLoans.map((item, index) => (
+              <DataTable.Row key={index}>
+                <DataTable.Cell>{item.design}</DataTable.Cell>
+                <DataTable.Cell>{item.name}</DataTable.Cell>
+                <DataTable.Cell>{item.loanDate}</DataTable.Cell>
+              </DataTable.Row>
+            )
+            )}
+            <DataTable.Pagination
+              optionsLabel={'Rows per page'}
             />
-          </Block>
-          {tempMembers && tempMembers.length > 0 && (
-            <DisplayMemberDataTable selectMember={this.initData} data={tempMembers} />
-          )}
+          </DataTable>
         </>)}
+        {stepBook && (<>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title>Auteur</DataTable.Title>
+              <DataTable.Title>Design</DataTable.Title>
+              <DataTable.Title numeric>Action</DataTable.Title>
+            </DataTable.Header>
+            {tempBooks && tempBooks.map((item, index) => (
+              <DataTable.Row key={index}>
+                <DataTable.Cell>{item.auteur}</DataTable.Cell>
+                <DataTable.Cell>{item.design}</DataTable.Cell>
+                <DataTable.Cell numeric>
+                  <TouchableWithoutFeedback
+                    onPress={() => { this.setSelectedBook(item) }}>
+                    <Block flex left>
+                      <Text
+                        style={{
+                          fontFamily: 'montserrat-regular',
+                          textAlign: 'center',
+                          color: nowTheme.COLORS.INFO,
+                          margin: 4
+                        }}
+                        size={24}
+                      >
+                        Next
+                      </Text>
+                    </Block>
+                  </TouchableWithoutFeedback>
+                </DataTable.Cell>
+              </DataTable.Row>
+            )
+            )}
+            <DataTable.Pagination
+              optionsLabel={'Rows per page'}
+            />
+          </DataTable>
+        </>)}
+        {stepMember && (<>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title>Name</DataTable.Title>
+              <DataTable.Title numeric>Action</DataTable.Title>
+            </DataTable.Header>
+            {tempMembers && tempMembers.map((item, index) => (
+              <DataTable.Row key={index}>
+                <DataTable.Cell>{item.name}</DataTable.Cell>
+                <DataTable.Cell numeric>
+                  <TouchableWithoutFeedback
+                    onPress={() => { this.setSelectedMember(item) }}>
+                    <Block flex left>
+                      <Text
+                        style={{
+                          fontFamily: 'montserrat-regular',
+                          textAlign: 'center',
+                          color: nowTheme.COLORS.INFO,
+                          margin: 4
+                        }}
+                        size={24}
+                      >
+                        Next
+                      </Text>
+                    </Block>
+                  </TouchableWithoutFeedback>
+                </DataTable.Cell>
+              </DataTable.Row>
+            )
+            )}
+            <DataTable.Pagination
+              optionsLabel={'Rows per page'}
+            />
+          </DataTable>
+
+        </>)}
+        {stepFinal && (
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Confirm Loan</Text>
+              <Button
+                color="info"
+                style={styles.button}
+              >
+                <TouchableWithoutFeedback
+                  onPress={() => this.createLoan()}
+                >
+                  <Text style={styles.colorWhite}>Confirm</Text>
+                </TouchableWithoutFeedback>
+              </Button>
+              <Text style={styles.textStyle}>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    this.setState({
+                      selectedBook: null,
+                      selectedMember: null,
+                      stepLoan: true,
+                      stepBook: false,
+                      stepMember: false,
+                      stepFinal: false,
+                    })
+                  }}
+                >
+                  <Text>Cancel</Text>
+                </TouchableWithoutFeedback>
+              </Text>
+            </View>
+          </View>
+        )
+        }
       </ScrollView>
     );
   };
