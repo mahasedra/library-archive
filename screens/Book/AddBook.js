@@ -211,7 +211,7 @@ class AddBook extends React.Component {
                                                                 <Icon
                                                                     size={16}
                                                                     color="#ADB5BD"
-                                                                    name="email-852x"
+                                                                    name="badge2x"
                                                                     family="NowExtra"
                                                                     style={styles.inputIcons}
                                                                 />

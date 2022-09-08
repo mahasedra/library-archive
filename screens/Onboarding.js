@@ -60,7 +60,7 @@ export default class Onboarding extends React.Component {
                   size={16}
                   style={{ fontFamily: 'montserrat-regular' }}
                 >
-                  Coded by
+                  Coded by Mahasedra
                 </Text>
                 <Image
                   source={Images.CreativeTimLogo}

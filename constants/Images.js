@@ -8,7 +8,7 @@ const NowLogo = require('../assets/imgs/now-logo.png');
 const iOSLogo = require('../assets/imgs/ios.png');
 const androidLogo = require('../assets/imgs/android.png');
 const ProfilePicture = require('../assets/imgs/profile-img.jpg');
-const CreativeTimLogo = require('../assets/imgs/creative-tim-white-slim2.png');
+const CreativeTimLogo = require('../assets/imgs/01.png');
 const InvisionLogo = require('../assets/imgs/invision-white-slim.png');
 
 const Viewed = [
